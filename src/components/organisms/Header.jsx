@@ -1,9 +1,13 @@
-import { useState, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { AuthContext } from "../../App";
 import ApperIcon from "@/components/ApperIcon";
-import Button from "@/components/atoms/Button";
 import SearchBar from "@/components/molecules/SearchBar";
+import Browse from "@/components/pages/Browse";
+import Saved from "@/components/pages/Saved";
+import Button from "@/components/atoms/Button";
 
 const Header = ({ onSearch }) => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -63,7 +67,7 @@ const Header = ({ onSearch }) => {
             </button>
           </div>
 
-          {/* Desktop Navigation */}
+{/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-8">
             <nav className="flex items-center space-x-6">
               <button
@@ -89,6 +93,11 @@ const Header = ({ onSearch }) => {
                 <span>Saved</span>
               </button>
             </nav>
+            
+            {/* User Section */}
+            <div className="flex items-center space-x-4">
+              <UserSection />
+            </div>
           </div>
 
           {/* Search Bar */}
@@ -96,13 +105,18 @@ const Header = ({ onSearch }) => {
             <SearchBar onSearch={handleSearch} />
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2 text-slate-600 hover:text-primary transition-colors"
-          >
-            <ApperIcon name={isMobileMenuOpen ? "X" : "Menu"} size={24} />
-          </button>
+{/* Mobile Menu Button and User */}
+          <div className="flex items-center space-x-3">
+            <div className="lg:hidden">
+              <UserSection />
+            </div>
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden p-2 text-slate-600 hover:text-primary transition-colors"
+            >
+              <ApperIcon name={isMobileMenuOpen ? "X" : "Menu"} size={24} />
+            </button>
+          </div>
         </div>
 
         {/* Mobile Search */}
@@ -153,8 +167,44 @@ const Header = ({ onSearch }) => {
           </div>
         </motion.div>
       )}
-    </motion.header>
+</motion.header>
   );
 };
 
+const UserSection = () => {
+  const { logout } = useContext(AuthContext);
+  const user = useSelector((state) => state.user.user);
+
+  const handleLogout = async () => {
+    if (confirm('Are you sure you want to logout?')) {
+      await logout();
+    }
+  };
+
+  return (
+    <div className="flex items-center space-x-3">
+      {user && (
+        <div className="hidden sm:flex items-center space-x-2">
+          <div className="w-8 h-8 bg-gradient-to-r from-primary to-blue-600 rounded-full flex items-center justify-center">
+            <span className="text-white text-sm font-semibold">
+              {user.firstName?.[0] || user.emailAddress?.[0] || 'U'}
+            </span>
+          </div>
+          <span className="text-sm text-slate-700 font-medium">
+            {user.firstName || user.emailAddress?.split('@')[0] || 'User'}
+          </span>
+        </div>
+      )}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handleLogout}
+        className="text-slate-600 hover:text-red-600 hover:border-red-300"
+      >
+        <ApperIcon name="LogOut" size={16} className="mr-1" />
+        <span className="hidden sm:inline">Logout</span>
+      </Button>
+    </div>
+  );
+};
 export default Header;

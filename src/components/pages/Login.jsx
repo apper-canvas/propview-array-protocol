@@ -1,0 +1,54 @@
+import { useEffect, useContext } from 'react';
+import { Link } from 'react-router-dom';
+import { AuthContext } from '../../App';
+import ApperIcon from '@/components/ApperIcon';
+
+function Login() {
+  const { isInitialized } = useContext(AuthContext);
+  
+  useEffect(() => {
+    if (isInitialized) {
+      const { ApperUI } = window.ApperSDK;
+      ApperUI.showLogin("#authentication");
+    }
+  }, [isInitialized]);
+  
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="w-full max-w-md space-y-8 p-8 bg-white rounded-lg shadow-md">
+        <div className="flex flex-col gap-6 items-center justify-center">
+          <div className="flex items-center space-x-2">
+            <div className="bg-gradient-to-r from-primary to-blue-600 p-2 rounded-xl">
+              <ApperIcon name="Home" size={24} className="text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold font-display bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+                PropView
+              </h1>
+              <p className="text-xs text-slate-500">Modern Real Estate</p>
+            </div>
+          </div>
+          <div className="flex flex-col gap-1 items-center justify-center">
+            <div className="text-center text-lg xl:text-xl font-bold">
+              Sign in to PropView
+            </div>
+            <div className="text-center text-sm text-gray-500">
+              Welcome back, please sign in to continue
+            </div>
+          </div>
+        </div>
+        <div id="authentication" />
+        <div className="text-center mt-4">
+          <p className="text-sm text-slate-600">
+            Don't have an account?{' '}
+            <Link to="/signup" className="font-medium text-primary hover:text-primary-dark">
+              Sign up
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Login;
